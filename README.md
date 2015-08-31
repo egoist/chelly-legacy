@@ -1,2 +1,9 @@
 # chelly
-chelly is a markdown editor and a singer
+
+chelly is a note editor and a singer
+
+**WIP**
+
+## License
+
+MIT.
