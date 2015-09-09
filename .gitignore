@@ -1,6 +1,6 @@
 # app
 lib/
-bower_component
+bower_components
 
 # Logs
 logs
