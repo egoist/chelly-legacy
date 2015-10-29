@@ -1,0 +1,18 @@
+task.add('app', () => {
+  exec('npm run app')
+})
+
+task.add('watch', () => {
+  exec('npm run watch')
+})
+
+task.add('build', () => {
+  exec('npm run build')
+})
+
+task.add('git', () => {
+  var message = argv._[1] || 'update'
+  exec('git add -A')
+  exec(`git commit -m "${message}"`)
+  exec('git push origin master')
+})
