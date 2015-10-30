@@ -1,0 +1,29 @@
+* {
+  box-sizing: border-box;
+}
+
+[class*=grid-], .clearfix {
+  &:after {
+    content: '';
+    height: 0;
+    visibility: hidden;
+    clear: both;
+    display: block;
+  }
+}
+
+[class*=grid-] {
+  float: left;
+}
+
+.grid-4 {
+  width: 33.3333333%;
+}
+
+.grid-8 {
+  width: 66.6666666%;
+}
+
+.with-padding {
+  padding: 0 10px;
+}

@@ -1,14 +1,4 @@
-task.add('app', () => {
-  exec('npm run app')
-})
-
-task.add('watch', () => {
-  exec('npm run watch')
-})
-
-task.add('build', () => {
-  exec('npm run build')
-})
+task.add('deploy', ['git'])
 
 task.add('git', () => {
   var message = argv._[1] || 'update'

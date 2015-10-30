@@ -8,11 +8,21 @@ module.exports = {
     libraryTarget: 'umd'
   },
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['', '.js', '.vue']
   },
   module: {
     loaders: [
-      { test: /\.jsx?$/, loaders: ['babel?stage=0'] },
+      { test: /\.js$/, loaders: ['babel?stage=0'] },
+      {
+        test: /\.vue$/,
+        loaders: ['vue']
+      }
+    ]
+  },
+  vue: {
+    postcss: [
+      require('postcss-import')(),
+      require('postcss-nested')()
     ]
   },
   plugins: [],
