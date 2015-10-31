@@ -24,7 +24,6 @@
 </template>
 
 <script>
-  import { progressJS } from '../helpers/progress'
   export default {
     methods: {
     }

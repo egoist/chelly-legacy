@@ -12,7 +12,10 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.js$/, loaders: ['babel?stage=0'] },
+      {
+        test: /\.js$/, loaders: ['babel?stage=0'],
+        exclude: [/node_modules/]
+      },
       {
         test: /\.vue$/,
         loaders: ['vue']

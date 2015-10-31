@@ -19,7 +19,7 @@ if (!db.app.get('init')) {
   db.app.set('notes', 0)
 }
 if(!db.app.get('setDir')) {
-  mkdirp.sync(userHome + '/.chelly/notes')
+  mkdirp.sync(userHome + '/.chelly')
   db.app.set('setDir', true)
 }
 

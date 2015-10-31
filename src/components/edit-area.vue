@@ -6,10 +6,24 @@
     bottom: 0;
     top: 0;
     background-color: #fff;
+    .edit-header {
+      height: 40px;
+      line-height: 40px;
+      border-bottom: 1px solid #d9d9d9;
+      padding: 0 10px;
+      .input-title {
+        border: none;
+        padding: 0;
+        font-size: 15px;
+        &:focus {
+          box-shadow: none;
+        }
+      }
+    }
   }
   .write-here, .preview-here {
     width: 50%;
-    height: 100%;
+    height: calc(100% - 40px);
     float: left;
     padding: 10px;
     word-wrap: break-word;
@@ -41,8 +55,12 @@
 
 <template>
   <section class="edit-area">
+    <div class="edit-header">
+      <input type="text" class="form-control input-title" v-model="title" />
+    </div>
     <div class="write-here"><textarea v-el:textarea class="form-control" v-model="text">{{ text }}</textarea></div>
     <div class="preview-here github2" v-el:preview>{{{ text | md }}}</div>
+
   </section>
 </template>
 
@@ -53,12 +71,16 @@
   export default {
     data () {
       return {
+        title: 'Untitled',
         text: '# example'
       }
     },
     methods: {
       handleChange () {
         this.text = this.editor.getValue()
+      },
+      handleScroll () {
+        this.$els.preview.scrollTop = this.editor.doc.scrollTop
       }
     },
     ready () {
@@ -71,9 +93,10 @@
         matchBrackets: true,
       })
       this.editor.on('change', this.handleChange)
+      this.editor.on('scroll', this.handleScroll)
     },
     filters: {
-      md: md
+      md
     }
   }
 </script>
