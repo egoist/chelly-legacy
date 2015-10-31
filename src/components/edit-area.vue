@@ -58,7 +58,7 @@
     <div class="edit-header">
       <input type="text" class="form-control input-title" v-model="title" />
     </div>
-    <div class="write-here"><textarea v-el:textarea class="form-control" v-model="text">{{ text }}</textarea></div>
+    <div class="write-here" v-el:write><textarea v-el:textarea class="form-control" v-model="text">{{ text }}</textarea></div>
     <div class="preview-here github2" v-el:preview>{{{ text | md }}}</div>
 
   </section>
@@ -80,7 +80,13 @@
         this.text = this.editor.getValue()
       },
       handleScroll () {
-        this.$els.preview.scrollTop = this.editor.doc.scrollTop
+        const scroll = this.editor.getScrollInfo()
+        const previewHeight = this.$els.preview.scrollHeight - this.$els.preview.offsetHeight
+        const codeHeight = scroll.height - this.$els.write.offsetHeight
+        const ratio = previewHeight / codeHeight
+        const previewPostition = scroll.top * ratio
+
+        this.$els.preview.scrollTop = previewPostition
       }
     },
     ready () {
