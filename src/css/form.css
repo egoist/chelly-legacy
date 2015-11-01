@@ -26,6 +26,17 @@
     padding: 10px 15px;
     width: 300px;
   }
+  .form-group {
+    label {
+      display: block;
+      text-align: left;
+      margin: 5px 0;
+    }
+  }
+  &.center {
+    width: 300px;
+    margin: 0 auto;
+  }
   .btn {
     width: 300px;
     &.btn-blue {

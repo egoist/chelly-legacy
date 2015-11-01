@@ -41,9 +41,15 @@
       <button class="btn no-notes" @click="showLogin = showLogin === true ? false : true">Sign in</button>
     </template>
     <div class="welcome-reg" v-show="showReg">
-      <form class="form">
+      <form class="form center" @submit="handleRegister">
         <div class="form-group">
-          <input type="text" class="form-control">
+          <input type="email" class="form-control" placeholder="Email" v-model="userForReg.email">
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Username" v-model="userForReg.username">
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" placeholder="Password" v-model="userForReg.password">
         </div>
         <button class="btn btn-blue">Create account</button>
       </form>
@@ -55,14 +61,33 @@
 </template>
 
 <script>
+  import { url } from '../helpers/api'
+  import biu from '../helpers/biu'
   export default {
     data () {
       return {
         showReg: false,
-        showLogin: false
+        showLogin: false,
+        userForReg: {
+          username: '',
+          password: '',
+          email: ''
+        }
       }
     },
     methods: {
+      handleRegister (e) {
+        e.preventDefault()
+        this.$http.post(url('register'), {user: this.userForReg}, data => {
+          if (data.code) {
+            return biu({
+              type: 'error',
+              text: data.message,
+              autoHide: true
+            })
+          }
+        })
+      }
     }
   }
 </script>

@@ -7,6 +7,10 @@ import userHome from 'user-home'
 import db from './helpers/localdb'
 
 Vue.use(VueRouter)
+if (process.env.HOT) {
+  Vue.config.debug = true
+}
+Vue.use(require('vue-resource'))
 // set Menu
 import menuTemplate from './menuTemplate'
 let Menu = remote.require('menu')
