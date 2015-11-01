@@ -1,8 +1,20 @@
-task.add('deploy', ['git'])
+register('deploy', ['git'])
 
-task.add('git', () => {
+register('git', () => {
   var message = argv._[1] || 'update'
   exec('git add -A')
   exec(`git commit -m "${message}"`)
   exec('git push origin master')
+})
+
+register('watch', () => {
+  exec('node server.js')
+})
+
+register('app', () => {
+  if (process.platform === 'win32') {
+    exec(`set NODE_ENV=development && set HOT=1 && electron .`)
+  } else {
+    exec(`NODE_ENV=development HOT=1 electron .`)
+  }
 })

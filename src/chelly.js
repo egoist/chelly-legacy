@@ -27,7 +27,7 @@ if(!db.app.get('setDir')) {
 const router = new VueRouter()
 router.map({
     '/': {
-      component: db.app.get('notes') === 0 ? require('./views/no-notes') : require('./views/home')
+      component: db.app.get('user') ? require('./views/home') : require('./views/welcome')
     },
     '/new': {
       component: require('./views/new')

@@ -1,3 +1,4 @@
+var webpack = require('webpack')
 var path = require('path')
 
 module.exports = {
@@ -5,7 +6,7 @@ module.exports = {
   output: {
     path: path.resolve('./build'),
     filename: 'bundle.js',
-    libraryTarget: 'umd'
+    libraryTarget: 'commonjs2'
   },
   resolve: {
     extensions: ['', '.js', '.vue']
@@ -24,7 +25,6 @@ module.exports = {
   },
   vue: {
     postcss: [
-      require('postcss-import')(),
       require('postcss-nested')()
     ]
   },

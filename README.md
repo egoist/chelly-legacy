@@ -1,14 +1,16 @@
 # chelly
 
-chelly is a note editor and a singer
+**WIP** chelly is a note editor and a singer
 
-## Why Chelly
+## Development
 
-- Chelly does not store your note in the cloud, everything is stored in your local machine, you can backup notes with dropbox yourself.
-- Most simple UI in the planet, which means you can focus on writing.
-- Chelly is a singer that you'll fall in love with.
-
-**WIP**
+```bash
+npm install -g electron-prebuilt runfile
+git clone https://github.com/egoist/chelly.git && cd chelly
+npm install --verbose
+run watch  # start webpack server with hot-reload
+run app    # start app with hot-reload
+```
 
 ## License
 

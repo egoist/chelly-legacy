@@ -50,6 +50,7 @@
     width: calc(50% - 1px);
     border-left: 1px solid #d0d0d0;
     overflow: auto;
+    padding-bottom: 150px;
   }
 </style>
 
@@ -69,10 +70,10 @@
   import markdown from 'codemirror/mode/markdown/markdown'
   import md from '../helpers/md'
   export default {
+    props: ['text'],
     data () {
       return {
-        title: 'Untitled',
-        text: '# example'
+        title: 'Untitled'
       }
     },
     methods: {

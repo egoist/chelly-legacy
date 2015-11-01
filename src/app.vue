@@ -8,28 +8,11 @@
     color: #333;
     text-decoration: none;
   }
-  @import 'codemirror/lib/codemirror';
-  @import 'src/css/preview-github2.css';
-  @import 'src/css/grid.css';
-  .btn {
-    border: 1px solid #e2e2e2;
-    padding: 0 12px;
-    height: 40px;
-    line-height: 40px;
-    border-radius: 2px;
-  }
-  .form-control {
-    padding: 5px 10px;
-    outline: none;
-    border: 1px solid #e2e2e2;
-    border-radius: 2px;
-    font-family: Helvetica, serif;
-    &:focus {
-      border-color: #35b5f4;
-      box-shadow: 0 0 0 3px rgba(48,144,228,.1);
-    }
-  }
 </style>
+<style src="codemirror/lib/codemirror.css"></style>
+<style src="./css/preview-github2.css"></style>
+<style src="./css/grid.css"></style>
+<style src="./css/form.css"></style>
 
 <style scoped>
   h1 {

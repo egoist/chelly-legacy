@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack -p",
-    "app": "electron .",
-    "watch": "webpack --watch"
+    "app": "HOT=1 NODE_ENV=development electron .",
+    "watch": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -20,13 +20,13 @@
   },
   "homepage": "https://github.com/egoist/chelly#readme",
   "devDependencies": {
-    "autosize": "^3.0.13",
     "babel-core": "^5.8.23",
     "babel-loader": "^5.3.2",
     "babel-runtime": "^5.8.29",
     "codemirror": "^5.8.0",
     "css-loader": "^0.21.0",
-    "electron-prebuilt": "^0.34.1",
+    "cssnext": "^1.8.4",
+    "express": "^4.13.3",
     "localdb": "^0.1.4",
     "marked": "^0.3.5",
     "mkdirp": "^0.5.1",
@@ -43,6 +43,9 @@
     "vue-html-loader": "^1.0.0",
     "vue-loader": "ufork/vue-loader",
     "vue-router": "^0.7.5",
-    "webpack": "^1.12.0"
+    "webpack": "^1.12.0",
+    "webpack-dev-middleware": "^1.2.0",
+    "webpack-hot-middleware": "^2.4.1",
+    "webpack-target-electron-renderer": "^0.1.1"
   }
 }
