@@ -59,7 +59,9 @@
     <div class="edit-header">
       <input type="text" class="form-control input-title" v-model="title" />
     </div>
-    <div class="write-here" v-el:write><textarea v-el:textarea class="form-control" v-model="text">{{ text }}</textarea></div>
+    <div class="write-here" v-el:write>
+      <textarea v-el:textarea class="form-control" v-model="text">{{ text }}</textarea>
+    </div>
     <div class="preview-here github2" v-el:preview>{{{ text | md }}}</div>
 
   </section>
@@ -88,6 +90,15 @@
         const previewPostition = scroll.top * ratio
 
         this.$els.preview.scrollTop = previewPostition
+      },
+      handleKeyPress (instance, e) {
+        // ctrl/cmd + s: save
+        if ((e.ctrlKey || e.metaKey) && e.keyCode === 19) {
+          this.handleSave()
+        }
+      },
+      handleSave () {
+        // todo
       }
     },
     ready () {
@@ -101,6 +112,7 @@
       })
       this.editor.on('change', this.handleChange)
       this.editor.on('scroll', this.handleScroll)
+      this.editor.on('keypress', this.handleKeyPress)
     },
     filters: {
       md

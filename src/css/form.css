@@ -6,6 +6,11 @@
   border-radius: 2px;
   cursor: pointer;
   outline: none;
+  &.btn-ghost {
+    background-color: #fff;
+    border-color: #fff;
+    color: #999;
+  }
 }
 .form-group {
   margin-bottom: 10px;

@@ -1,14 +1,20 @@
 <template>
   <Sidebar></Sidebar>
-  <Editarea :text="guideMarkdown"></Editarea>
+  <Editarea :text="defaultMarkdown"></Editarea>
 </template>
 
 <script>
-  import guideMarkdown from '../helpers/guide.js'
+  import guideMarkdown from '../helpers/guide'
+  import db from '../helpers/localdb'
   export default {
     data () {
+      let defaultMarkdown = db.app.get('user').notes === 0 ? guideMarkdown : ''
+      const lastNote = db.app.get('lastNote')
+      if (lastNote) {
+        defaultMarkdown = lastNote.content
+      }
       return {
-        guideMarkdown
+        defaultMarkdown
       }
     },
     components: {

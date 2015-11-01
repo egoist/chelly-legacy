@@ -20,21 +20,22 @@ Menu.setApplicationMenu(menu)
 // create folder to store notes
 if (!db.app.get('init')) {
   db.app.set('init', true)
-  db.app.set('notes', 0)
 }
 if(!db.app.get('setDir')) {
   mkdirp.sync(userHome + '/.chelly')
   db.app.set('setDir', true)
 }
-
+if (db.app.get('user')) {
+  location.hash = 'new'
+}
 // create routes
 const router = new VueRouter()
 router.map({
     '/': {
-      component: db.app.get('user') ? require('./views/home') : require('./views/welcome')
+      component: require('./views/welcome')
     },
     '/new': {
-      component: require('./views/new')
+      component:  require('./views/new')
     }
 })
 

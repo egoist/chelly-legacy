@@ -52,6 +52,19 @@
           <input type="password" class="form-control" placeholder="Password" v-model="userForReg.password">
         </div>
         <button class="btn btn-blue">Create account</button>
+        <button type="button" class="btn btn-ghost" @click="showLogin = true, showReg = false">Still not have a Chelly account?</button>
+      </form>
+    </div>
+    <div class="welcome-login" v-show="showLogin">
+      <form class="form center" @submit="handleLogin">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Username" v-model="userForLogin.username">
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" placeholder="Password" v-model="userForLogin.password">
+        </div>
+        <button class="btn btn-blue">Sign in</button>
+        <button type="button" class="btn btn-ghost" @click="showLogin = false, showReg = true">Create a Chelly account!</button>
       </form>
     </div>
     <div class="welcome-locally">
@@ -63,6 +76,7 @@
 <script>
   import { url } from '../helpers/api'
   import biu from '../helpers/biu'
+  import db from '../helpers/localdb'
   export default {
     data () {
       return {
@@ -72,13 +86,25 @@
           username: '',
           password: '',
           email: ''
+        },
+        userForLogin: {
+          username: '',
+          password: ''
         }
       }
     },
     methods: {
       handleRegister (e) {
         e.preventDefault()
-        this.$http.post(url('register'), {user: this.userForReg}, data => {
+        this.loginOrRegister('register')
+      },
+      handleLogin (e) {
+        e.preventDefault()
+        this.loginOrRegister('login')
+      },
+      loginOrRegister (type) {
+        const user = type === 'register' ? this.userForReg : this.userForLogin
+        this.$http.post(url(type), {user: user}, data => {
           if (data.code) {
             return biu({
               type: 'error',
@@ -86,6 +112,8 @@
               autoHide: true
             })
           }
+          db.app.set('user', data)
+          this.$route.router.go('/new')
         })
       }
     }
