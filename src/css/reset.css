@@ -17,3 +17,11 @@ a {
   color: #333;
   text-decoration: none;
 }
+
+.inner {
+  padding: 10px;
+}
+
+.CodeMirror {
+  height: 100% !important;
+}

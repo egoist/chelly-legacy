@@ -1,6 +1,33 @@
+<style scoped>
+  .sidebar-loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: #fff;
+    width: 240px;
+    display: none;
+  }
+  .shown {
+    display: block;
+    animation: fadeInAndOut 1s infinite
+  }
+
+  @keyframes fadeInAndOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+</style>
+
 <template>
-  <Sidebar></Sidebar>
-  <Editarea :text="defaultMarkdown"></Editarea>
+  <Sidebar :on-update-editarea="handleUpdateEditarea" :default-note="defaultNote"></Sidebar>
+  <Editarea :on-update-sidebar="handleUpdateSidebar" :default-note="defaultNote" :mode="mode"></Editarea>
+  <div class="sidebar-loading"></div>
+  <div class="editor-loading"></div>
 </template>
 
 <script>
@@ -8,13 +35,24 @@
   import db from '../helpers/localdb'
   export default {
     data () {
-      let defaultMarkdown = db.app.get('user').notes === 0 ? guideMarkdown : ''
-      const lastNote = db.app.get('lastNote')
+      let mode = 'create'
+      let defaultNote = guideMarkdown
+      const lastNote = db.lastNote.get()
       if (lastNote) {
-        defaultMarkdown = lastNote.content
+        defaultNote = lastNote
+        mode = 'update'
       }
       return {
-        defaultMarkdown
+        defaultNote,
+        mode
+      }
+    },
+    methods: {
+      handleUpdateEditarea (note) {
+        this.$broadcast('update.editor', note)
+      },
+      handleUpdateSidebar (note) {
+        this.$broadcast('update.sidebar.current', note)
       }
     },
     components: {

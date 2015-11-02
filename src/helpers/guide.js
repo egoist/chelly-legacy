@@ -183,4 +183,9 @@ End a line with two or more spaces:
 	Violets are blue.
 `
 
-export default guide
+export default {
+	content: guide,
+	title: 'Why you\'ll love Chelly',
+	whocanview: 'me',
+	objectId: null
+}

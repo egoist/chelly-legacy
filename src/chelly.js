@@ -5,8 +5,9 @@ import VueRouter from 'vue-router'
 import db from './helpers/localdb'
 
 Vue.use(VueRouter)
-if (process.env.HOT) {
+if (location.href.indexOf('index.hot.html') > -1) {
   Vue.config.debug = true
+  window.db = db
 }
 Vue.use(require('vue-resource'))
 // set Menu

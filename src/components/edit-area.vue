@@ -57,12 +57,12 @@
 <template>
   <section class="edit-area">
     <div class="edit-header">
-      <input type="text" class="form-control input-title" v-model="title" />
+      <input type="text" class="form-control input-title" v-model="note.title" @keydown.83="handleTitleSave" />
     </div>
     <div class="write-here" v-el:write>
-      <textarea v-el:textarea class="form-control" v-model="text">{{ text }}</textarea>
+      <textarea v-el:textarea class="form-control" v-model="note.content">{{ note.content }}</textarea>
     </div>
-    <div class="preview-here github2" v-el:preview>{{{ text | md }}}</div>
+    <div class="preview-here github2" v-el:preview>{{{ note.content | md }}}</div>
 
   </section>
 </template>
@@ -71,17 +71,25 @@
   import CodeMirror from 'codemirror'
   import markdown from 'codemirror/mode/markdown/markdown'
   import md from '../helpers/md'
+  import { url } from '../helpers/api'
+  import { sidebarLoading } from '../helpers/loading'
+  import db from '../helpers/localdb'
+  import keymapping from '../helpers/keymapping'
   export default {
-    props: ['text'],
+    props: ['defaultNote', 'onUpdateSidebar', 'mode'],
     data () {
       return {
-        title: 'Untitled',
-        mode: 'create'
+        note: this.defaultNote
       }
     },
     methods: {
       handleChange () {
         this.text = this.editor.getValue()
+      },
+      handleTitleSave (e) {
+        if (e.metaKey || e.ctrlKey) {
+          this.handleSave()
+        }
       },
       handleScroll () {
         const scroll = this.editor.getScrollInfo()
@@ -92,14 +100,45 @@
 
         this.$els.preview.scrollTop = previewPostition
       },
-      handleKeyPress (instance, e) {
-        // ctrl/cmd + s: save
-        if ((e.ctrlKey || e.metaKey) && e.keyCode === 19) {
-          this.handleSave()
-        }
-      },
       handleSave () {
-        // todo
+        sidebarLoading.start()
+        const user = db.app.get('user')
+        const note = this.note
+        note.content = this.editor.getValue()
+        this.$http.post(url('save'), {type: this.mode, user_id: user.objectId, api_key: user.api_key, note: note}, data => {
+          sidebarLoading.stop()
+          if (data.code) {
+            return biu({
+              type: 'error',
+              message: data.message,
+              autoHide: true
+            })
+          }
+          this.note = data
+          this.note.active = true
+          this.mode = 'update'
+          this.onUpdateSidebar(this.note)
+        })
+      },
+      update (note, fn) {
+        this.fetchNote(note, note => {
+          if (note.code) {
+            return biu({
+              type: 'error',
+              message: note.message,
+              autoHide: true
+            })
+          }
+          this.note = note
+          this.editor.setValue(note.content)
+          this.mode = 'update'
+          db.lastNote.override(note, true)
+        })
+      },
+      fetchNote (note, fn) {
+        this.$http.post(url('note'), {note_id: note.objectId}, note => {
+          fn(note)
+        })
       }
     },
     ready () {
@@ -113,7 +152,9 @@
       })
       this.editor.on('change', this.handleChange)
       this.editor.on('scroll', this.handleScroll)
-      this.editor.on('keypress', this.handleKeyPress)
+      CodeMirror.commands.save = this.handleSave
+
+      this.$on('update.editor', this.update)
     },
     filters: {
       md

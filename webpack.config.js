@@ -24,7 +24,13 @@ module.exports = {
     ]
   },
   vue: {
-    postcss: [
+    autoprefixer: false,
+    loaders: {
+      css: 'style!css!postcss'
+    }
+  },
+  postcss: function () {
+    return [
       require('postcss-nested')()
     ]
   },
