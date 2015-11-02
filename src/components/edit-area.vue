@@ -13,10 +13,16 @@
       padding: 0 10px;
       .input-title {
         border: none;
+        border-bottom: 1px solid transparent;
+        border-radius: 0;
+        height: 25px;
+        line-height: 25px;
         padding: 0;
         font-size: 15px;
+        width: 240px;
         &:focus {
           box-shadow: none;
+          border-bottom-color: #e2e2e2;
         }
       }
     }
@@ -30,6 +36,7 @@
   }
   .write-here {
     padding-right: 0;
+    cursor: text;
     textarea {
       border: none;
       width: 100%;
@@ -51,6 +58,13 @@
     border-left: 1px solid #d0d0d0;
     overflow: auto;
     padding-bottom: 150px;
+  }
+</style>
+<style>
+  .write-here {
+    .CodeMirror-vscrollbar {
+      cursor: default;
+    }
   }
 </style>
 

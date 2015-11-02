@@ -38,6 +38,10 @@
         border-color: #35b5f4;
       }
     }
+    .sidebar-notes {
+      overflow: auto;
+      height: calc(100% - 40px)
+    }
     .sidebar-note {
       padding: 8px 10px;
       font-size: 14px;
@@ -65,7 +69,7 @@
         <input type="text" class="form-control global-notes-search"/>
       </div>
       <div class="grid-4 with-padding" style="padding-left: 0; text-align: right;">
-        <a v-link="{ path: '/new' }" class="btn new-btn">New</a>
+        <button type="button" class="btn new-btn">New</button>
       </div>
 
     </header>
