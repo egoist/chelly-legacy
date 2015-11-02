@@ -75,7 +75,8 @@
     props: ['text'],
     data () {
       return {
-        title: 'Untitled'
+        title: 'Untitled',
+        mode: 'create'
       }
     },
     methods: {

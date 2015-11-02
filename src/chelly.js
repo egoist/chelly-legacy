@@ -2,8 +2,6 @@ import remote from 'remote'
 import localdb from 'localdb'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import mkdirp from 'mkdirp'
-import userHome from 'user-home'
 import db from './helpers/localdb'
 
 Vue.use(VueRouter)
@@ -20,10 +18,6 @@ Menu.setApplicationMenu(menu)
 // create folder to store notes
 if (!db.app.get('init')) {
   db.app.set('init', true)
-}
-if(!db.app.get('setDir')) {
-  mkdirp.sync(userHome + '/.chelly')
-  db.app.set('setDir', true)
 }
 if (db.app.get('user')) {
   location.hash = 'new'

@@ -52,7 +52,6 @@
           <input type="password" class="form-control" placeholder="Password" v-model="userForReg.password">
         </div>
         <button class="btn btn-blue">Create account</button>
-        <button type="button" class="btn btn-ghost" @click="showLogin = true, showReg = false">Still not have a Chelly account?</button>
       </form>
     </div>
     <div class="welcome-login" v-show="showLogin">
@@ -64,11 +63,15 @@
           <input type="password" class="form-control" placeholder="Password" v-model="userForLogin.password">
         </div>
         <button class="btn btn-blue">Sign in</button>
-        <button type="button" class="btn btn-ghost" @click="showLogin = false, showReg = true">Create a Chelly account!</button>
       </form>
     </div>
     <div class="welcome-locally">
-      <span>Run Chelly Locally ››</span>
+      <span class="btn btn-ghost" v-show="showReg" @click="showLogin = true, showReg = false">Already a Chelly member?</span>
+      <span class="btn btn-ghost" v-show="showLogin" @click="showLogin = false, showReg = true">Still not have a Chelly account?</span>
+      <i v-show="!showReg && !showLogin">Made by EGOIST with a Keyboard</i>
+      <!-- __future__
+      <span v-show="!showReg && !showLogin">Run Chelly Locally</span>
+      -->
     </div>
   </div>
 </template>
@@ -104,7 +107,21 @@
       },
       loginOrRegister (type) {
         const user = type === 'register' ? this.userForReg : this.userForLogin
+        for (var key in user) {
+          if (!user[key]) {
+            return biu({
+              type: 'error',
+              text: 'You should have filled out the form!',
+              autoHide: true
+            })
+          }
+        }
+        var processing = biu({
+          type: 'info',
+          text: 'Processing...'
+        })
         this.$http.post(url(type), {user: user}, data => {
+          processing.hide()
           if (data.code) {
             return biu({
               type: 'error',

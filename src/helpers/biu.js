@@ -35,7 +35,7 @@ class Biu {
   show () {
     this.biu.classList.add('biu-visible')
   }
-  hide (el) {
+  hide (el = this.biu) {
     el.classList.remove('biu-visible')
     setTimeout(() => {
       el.remove()

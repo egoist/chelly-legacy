@@ -20,7 +20,6 @@
   outline: none;
   border: 1px solid #e2e2e2;
   border-radius: 2px;
-  font-family: Helvetica, serif;
   &:focus {
     border-color: #35b5f4;
     box-shadow: 0 0 0 3px rgba(48,144,228,.1);

@@ -1,14 +1,4 @@
-<style>
-  body {
-    margin: 0;
-    font: 14px/1.4 Helvetica, serif;
-    position: relative;
-  }
-  a {
-    color: #333;
-    text-decoration: none;
-  }
-</style>
+<style src="./css/reset.css"></style>
 <style src="codemirror/lib/codemirror.css"></style>
 <style src="./css/preview-github2.css"></style>
 <style src="./css/grid.css"></style>
