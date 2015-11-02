@@ -2,6 +2,10 @@
 
 **WIP** chelly is a note editor and a singer
 
+## Technology
+
+I appreciate the open-source world, especially for [Vue](http://vuejs.org/), [Webpack](http://webpack.github.io/) and [Electron](http://electron.atom.io/).
+
 ## Development
 
 ```bash
