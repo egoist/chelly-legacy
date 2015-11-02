@@ -9,6 +9,7 @@
 
 - [ ] Share to GitHub Gists
 - [ ] Custom CSS for editor and preview
+- [ ] Cache sidebar list and last edit note in local database
 
 **v1.0.0**
 

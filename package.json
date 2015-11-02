@@ -1,6 +1,6 @@
 {
   "name": "chelly",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "chelly is a markdown editor and a singer",
   "main": "app.js",
   "scripts": {

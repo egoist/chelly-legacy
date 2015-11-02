@@ -7,6 +7,7 @@
     width: 240px;
     box-shadow: inset -1px 0 #e3e3e3;
     background-color: #fff;
+    padding-bottom: 4px;
     .sidebar-header {
       height: 40px;
       line-height: 40px;
@@ -49,6 +50,11 @@
         background-color: #398df0;
       }
     }
+    .sidebar-loader {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+    }
   }
 </style>
 
@@ -71,6 +77,7 @@
         </div>
       </template>
     </div>
+    <div class="sidebar-loader loader"></div>
   </div>
 </template>
 
@@ -78,6 +85,7 @@
   import db from '../helpers/localdb'
   import { url } from '../helpers/api'
   import { $$, domEach } from '../helpers/dom'
+  import { sidebarLoader } from '../helpers/loaders'
   export default {
     props: ['onUpdateEditarea', 'defaultNote'],
     data () {
@@ -87,8 +95,10 @@
     },
     methods: {
       fetchNotes () {
+        sidebarLoader.start()
         const user = db.app.get('user')
         this.$http.post(url(`user/${user.username}/notes/all`), {api_key: user.api_key, user_id: user.objectId}, notes => {
+          sidebarLoader.stop()
           if (notes && notes.length > 0) {
             notes.forEach(note => {
               if (note.objectId === this.defaultNote.objectId) {

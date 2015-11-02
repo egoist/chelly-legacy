@@ -26,8 +26,6 @@
 <template>
   <Sidebar :on-update-editarea="handleUpdateEditarea" :default-note="defaultNote"></Sidebar>
   <Editarea :on-update-sidebar="handleUpdateSidebar" :default-note="defaultNote" :mode="mode"></Editarea>
-  <div class="sidebar-loading"></div>
-  <div class="editor-loading"></div>
 </template>
 
 <script>

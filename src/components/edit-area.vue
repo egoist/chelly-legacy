@@ -72,7 +72,7 @@
   import markdown from 'codemirror/mode/markdown/markdown'
   import md from '../helpers/md'
   import { url } from '../helpers/api'
-  import { sidebarLoading } from '../helpers/loading'
+  import { sidebarLoader } from '../helpers/loaders'
   import db from '../helpers/localdb'
   import keymapping from '../helpers/keymapping'
   export default {
@@ -84,7 +84,7 @@
     },
     methods: {
       handleChange () {
-        this.text = this.editor.getValue()
+        this.note.content = this.editor.getValue()
       },
       handleTitleSave (e) {
         if (e.metaKey || e.ctrlKey) {
@@ -101,12 +101,12 @@
         this.$els.preview.scrollTop = previewPostition
       },
       handleSave () {
-        sidebarLoading.start()
+        sidebarLoader.start()
         const user = db.app.get('user')
         const note = this.note
         note.content = this.editor.getValue()
         this.$http.post(url('save'), {type: this.mode, user_id: user.objectId, api_key: user.api_key, note: note}, data => {
-          sidebarLoading.stop()
+          sidebarLoader.stop()
           if (data.code) {
             return biu({
               type: 'error',
@@ -121,7 +121,9 @@
         })
       },
       update (note, fn) {
+        sidebarLoader.start()
         this.fetchNote(note, note => {
+          sidebarLoader.stop()
           if (note.code) {
             return biu({
               type: 'error',
@@ -130,6 +132,7 @@
             })
           }
           this.note = note
+          this.$els.textarea.value = note.content
           this.editor.setValue(note.content)
           this.mode = 'update'
           db.lastNote.override(note, true)
