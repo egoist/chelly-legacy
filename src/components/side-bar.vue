@@ -66,7 +66,7 @@
   <div class="sidebar">
     <header class="sidebar-header">
       <div class="grid-8 with-padding">
-        <input type="text" class="form-control global-notes-search"/>
+        <input type="text" class="form-control global-notes-search" v-model="search_keyword"/>
       </div>
       <div class="grid-4 with-padding" style="padding-left: 0; text-align: right;">
         <button type="button" class="btn new-btn">New</button>
@@ -75,7 +75,7 @@
     </header>
     <div v-show="notes.length === 0" class="inner">Loading...</div>
     <div class="sidebar-notes">
-      <template v-for="note in notes" track-by="objectId">
+      <template v-for="note in notes | filterBy search_keyword in 'title'" track-by="objectId">
         <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': note.active}">
           {{ note.title }}
         </div>
@@ -94,6 +94,7 @@
     props: ['onUpdateEditarea', 'defaultNote'],
     data () {
       return {
+        search_keyword: '',
         notes: []
       }
     },
@@ -114,10 +115,15 @@
         })
       },
       activateNote (note, e) {
-        domEach($$('.sidebar-note'), el => el.classList.remove('active'))
-        e.target.classList.add('active')
-        this.defaultNote = note
-        this.onUpdateEditarea(note)
+        const timeout = this.search_keyword ? 100 : 0
+        this.search_keyword = ''
+        setTimeout(() => {
+          domEach($$('.sidebar-note'), el => el.classList.remove('active'))
+          e.target.classList.add('active')
+          this.defaultNote = note
+          this.onUpdateEditarea(note)
+        }, timeout)
+
       },
       update (note) {
         this.defaultNote = note
