@@ -25,6 +25,9 @@
           border-bottom-color: #e2e2e2;
         }
       }
+      .edit-header-opts {
+        float: right;
+      }
     }
   }
   .write-here, .preview-here {
@@ -55,7 +58,7 @@
   }
   .preview-here {
     width: calc(50% - 1px);
-    border-left: 1px solid #d0d0d0;
+    border-left: 1px solid #e3e3e3;
     overflow: auto;
     padding-bottom: 150px;
   }
@@ -72,6 +75,9 @@
   <section class="edit-area">
     <div class="edit-header">
       <input type="text" class="form-control input-title" v-model="note.title" @keydown.83="handleTitleSave" />
+      <div class="edit-header-opts">
+        <button type="button">tag</button>
+      </div>
     </div>
     <div class="write-here" v-el:write>
       <textarea v-el:textarea class="form-control" v-model="note.content">{{ note.content }}</textarea>
@@ -89,8 +95,9 @@
   import { sidebarLoader } from '../helpers/loaders'
   import db from '../helpers/localdb'
   import keymapping from '../helpers/keymapping'
+  import biu from '../helpers/biu'
   export default {
-    props: ['defaultNote', 'onUpdateSidebar', 'mode'],
+    props: ['defaultNote', 'onUpdateSidebar', 'mode', 'currentSaved'],
     data () {
       return {
         note: this.defaultNote
@@ -117,9 +124,7 @@
       handleSave () {
         sidebarLoader.start()
         const user = db.app.get('user')
-        const note = this.note
-        note.content = this.editor.getValue()
-        this.$http.post(url('save'), {type: this.mode, user_id: user.objectId, api_key: user.api_key, note: note}, data => {
+        this.$http.post(url('save'), {type: this.mode, user_id: user.objectId, api_key: user.api_key, note: this.note}, data => {
           sidebarLoader.stop()
           if (data.code) {
             return biu({
@@ -130,12 +135,23 @@
           }
           this.note = data
           this.note.active = true
+          this.currentSaved = true
           this.mode = 'update'
+          db.lastNote.override(this.note, true)
           this.onUpdateSidebar(this.note)
         })
       },
       update (note, fn) {
         sidebarLoader.start()
+
+        if (note.unsaved) {
+          this.note = note
+          this.$els.textarea.value = note.content
+          this.editor.setValue(note.content)
+          this.mode = 'create'
+          sidebarLoader.stop()
+          return
+        }
         this.fetchNote(note, note => {
           sidebarLoader.stop()
           if (note.code) {
@@ -156,12 +172,15 @@
         this.$http.post(url('note'), {note_id: note.objectId}, note => {
           fn(note)
         })
+      },
+      handleTyper () {
+        this.currentSaved = false
       }
     },
     ready () {
       this.editor = CodeMirror.fromTextArea(this.$els.textarea, {
         mode: 'markdown',
-        theme: "default",
+        theme: 'default',
         lineNumbers: false,
         lineWrapping: true,
         smartIndent: false,
@@ -169,6 +188,7 @@
       })
       this.editor.on('change', this.handleChange)
       this.editor.on('scroll', this.handleScroll)
+      this.editor.on('keypress', this.handleTyper)
       CodeMirror.commands.save = this.handleSave
 
       this.$on('update.editor', this.update)

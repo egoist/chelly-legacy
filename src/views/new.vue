@@ -24,8 +24,18 @@
 </style>
 
 <template>
-  <Sidebar :on-update-editarea="handleUpdateEditarea" :default-note="defaultNote"></Sidebar>
-  <Editarea :on-update-sidebar="handleUpdateSidebar" :default-note="defaultNote" :mode="mode"></Editarea>
+  <Sidebar
+    :on-update-editarea="handleUpdateEditarea"
+    :default-note="defaultNote"
+    :mode.sync="mode"
+    :current-saved.sync="currentSaved">
+  </Sidebar>
+  <Editarea
+    :on-update-sidebar="handleUpdateSidebar"
+    :default-note="defaultNote"
+    :mode.sync="mode"
+    :current-saved.sync="currentSaved">
+  </Editarea>
 </template>
 
 <script>
@@ -35,14 +45,17 @@
     data () {
       let mode = 'create'
       let defaultNote = guideMarkdown
+      let currentSaved = false
       const lastNote = db.lastNote.get()
       if (lastNote) {
         defaultNote = lastNote
         mode = 'update'
+        currentSaved = true
       }
       return {
         defaultNote,
-        mode
+        mode,
+        currentSaved
       }
     },
     methods: {

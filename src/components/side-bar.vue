@@ -69,11 +69,11 @@
         <input type="text" class="form-control global-notes-search" v-model="search_keyword"/>
       </div>
       <div class="grid-4 with-padding" style="padding-left: 0; text-align: right;">
-        <button type="button" class="btn new-btn">New</button>
+        <button type="button" class="btn new-btn" @click="applyEmptyNote">New</button>
       </div>
 
     </header>
-    <div v-show="notes.length === 0" class="inner">Loading...</div>
+    <div v-show="notes.length === 0" class="inner sidebar-notes-loading">Loading...</div>
     <div class="sidebar-notes">
       <template v-for="note in notes | filterBy search_keyword in 'title'" track-by="objectId">
         <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': note.active}">
@@ -88,10 +88,11 @@
 <script>
   import db from '../helpers/localdb'
   import { url } from '../helpers/api'
-  import { $$, domEach } from '../helpers/dom'
+  import { $, $$, domEach } from '../helpers/dom'
   import { sidebarLoader } from '../helpers/loaders'
+  import emptyNote from '../helpers/empty'
   export default {
-    props: ['onUpdateEditarea', 'defaultNote'],
+    props: ['onUpdateEditarea', 'defaultNote', 'mode', 'currentSaved'],
     data () {
       return {
         search_keyword: '',
@@ -111,10 +112,28 @@
               }
             })
           }
-          this.notes = notes
+          if (notes.length > 0) {
+            this.notes = notes
+          } else {
+            this.notes = [this.defaultNote]
+          }
+
         })
       },
+      applyEmptyNote () {
+        if (!this.currentSaved) {
+          alert('Do not save the current note?')
+          return
+        }
+        domEach($$('.sidebar-note'), el => el.classList.remove('active'))
+        this.notes.unshift(emptyNote)
+        this.onUpdateEditarea(emptyNote)
+      },
       activateNote (note, e) {
+        if (!this.currentSaved) {
+          alert('Do not save the current note?')
+          return
+        }
         const timeout = this.search_keyword ? 100 : 0
         this.search_keyword = ''
         setTimeout(() => {
@@ -128,6 +147,9 @@
       update (note) {
         this.defaultNote = note
         this.notes = this.notes.map(current_note => {
+          if (current_note.unsaved) {
+            return note
+          }
           if (current_note.objectId === note.objectId) {
             return note
           }

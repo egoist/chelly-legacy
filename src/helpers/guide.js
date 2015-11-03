@@ -187,5 +187,7 @@ export default {
 	content: guide,
 	title: 'Why you\'ll love Chelly',
 	whocanview: 'me',
-	objectId: null
+	objectId: null,
+	active: true,
+	unsaved: true
 }
