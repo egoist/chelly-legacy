@@ -25,3 +25,7 @@ a {
 .CodeMirror {
   height: 100% !important;
 }
+
+.noties {
+  top: 50px;
+}

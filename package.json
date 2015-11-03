@@ -29,7 +29,7 @@
     "express": "^4.13.3",
     "localdb": "^0.1.4",
     "marked": "^0.3.5",
-    "notie": "0.0.13",
+    "notie": "0.0.14",
     "postcss": "^5.0.10",
     "postcss-import": "^7.1.0",
     "postcss-loader": "^0.7.0",
