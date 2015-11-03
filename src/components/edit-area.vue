@@ -96,6 +96,7 @@
   import db from '../helpers/localdb'
   import keymapping from '../helpers/keymapping'
   import biu from '../helpers/biu'
+  import notie from 'notie'
   export default {
     props: ['defaultNote', 'onUpdateSidebar', 'mode', 'currentSaved'],
     data () {
@@ -133,6 +134,8 @@
               autoHide: true
             })
           }
+          console.log(notie)
+          notie('success', 'Saved!')
           this.note = data
           this.note.active = true
           this.currentSaved = true

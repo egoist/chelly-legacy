@@ -8,6 +8,7 @@ Vue.use(VueRouter)
 if (location.href.indexOf('index.hot.html') > -1) {
   Vue.config.debug = true
   window.db = db
+  window.Vue = Vue
 }
 Vue.use(require('vue-resource'))
 // set Menu
