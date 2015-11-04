@@ -60,7 +60,6 @@
     width: calc(50% - 1px);
     border-left: 1px solid #e3e3e3;
     overflow: auto;
-    padding-bottom: 150px;
   }
 </style>
 <style>
@@ -72,10 +71,16 @@
 </style>
 
 <template>
+  <Sidebar
+    :default-note="defaultNote"
+    :mode.sync="mode"
+    :current-saved.sync="currentSaved">
+  </Sidebar>
   <section class="edit-area">
     <div class="edit-header">
       <input type="text" class="form-control input-title" v-model="note.title" @keydown.83="handleTitleSave" />
       <div class="edit-header-opts">
+        <button type="button" @click="handleDeleteNote(this.note, $event)">delete</button>
         <button type="button">tag</button>
       </div>
     </div>
@@ -113,6 +118,12 @@
           this.handleSave()
         }
       },
+      handleDeleteNote (note = this.note, e) {
+        const user = db.app.get('user')
+        this.$http.post(url('note/remove'), {note: note, api_key: user.api_key, user_id: user.objectId}, data => {
+          console.log(data)
+        })
+      },
       handleScroll () {
         const scroll = this.editor.getScrollInfo()
         const previewHeight = this.$els.preview.scrollHeight - this.$els.preview.offsetHeight
@@ -128,26 +139,44 @@
         this.$http.post(url('save'), {type: this.mode, user_id: user.objectId, api_key: user.api_key, note: this.note}, data => {
           sidebarLoader.stop()
           if (data.code) {
-            return biu({
-              type: 'error',
-              message: data.message,
-              autoHide: true
-            })
+            return notie('error', data.message)
           }
-          console.log(notie)
           notie('success', 'Saved!')
           this.note = data
           this.note.active = true
+          this.note.updated = true
           this.currentSaved = true
           this.mode = 'update'
           db.lastNote.override(this.note, true)
-          this.onUpdateSidebar(this.note)
+          this.updateHistory(this.note)
+          this.$broadcast('update.sidebar.active.note', this.note)
         })
       },
-      update (note, fn) {
+      updateHistory (note) {
+        let history = db.history.get()
+        if (history) {
+          let exist = false
+          history.forEach(db_note => {
+            if (db_note.objectId === note.objectId) {
+              exist = true
+              return
+            }
+          })
+          console.log(exist)
+          if (exist) {
+            return
+          }
+        }
+        history = db.history.add(note).get()
+        if (history.length > 10) {
+          history = history.slice(1)
+          db.history.override(history)
+        }
+      },
+      update (note) {
         sidebarLoader.start()
-
         if (note.unsaved) {
+          this.currentSaved = false
           this.note = note
           this.$els.textarea.value = note.content
           this.editor.setValue(note.content)
@@ -156,19 +185,17 @@
           return
         }
         this.fetchNote(note, note => {
-          sidebarLoader.stop()
           if (note.code) {
-            return biu({
-              type: 'error',
-              message: note.message,
-              autoHide: true
-            })
+            sidebarLoader.stop()
+            console.log(note)
+            return notie('error', note.message)
           }
           this.note = note
           this.$els.textarea.value = note.content
           this.editor.setValue(note.content)
           this.mode = 'update'
           db.lastNote.override(note, true)
+          sidebarLoader.stop()
         })
       },
       fetchNote (note, fn) {
@@ -194,10 +221,13 @@
       this.editor.on('keypress', this.handleTyper)
       CodeMirror.commands.save = this.handleSave
 
-      this.$on('update.editor', this.update)
+      this.$on('update.editor.note', this.update)
     },
     filters: {
       md
+    },
+    components: {
+      Sidebar: require('./side-bar')
     }
   }
 </script>

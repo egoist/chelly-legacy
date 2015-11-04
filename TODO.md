@@ -3,19 +3,19 @@
 **v0.0.1**
 
 - [ ] Cloud sync
-- [ ] Check for updates
 
 **v0.0.2**
 
 - [ ] Share to GitHub Gists
-- [ ] Custom CSS for editor and preview
-- [ ] Cache sidebar list and last edit note in local database
 
 **v1.0.0**
 
-- [ ] Chinese/Japanese version
-- [ ] Public notes from others
+- [ ] Custom CSS for editor and preview
+- [ ] Check for updates
 
 **v2.0.0**
 
 - [ ] Offline mode
+- [ ] Chinese/Japanese version
+- [ ] Public notes from others
+- [ ] Open external markdown files

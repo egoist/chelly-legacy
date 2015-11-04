@@ -31,7 +31,11 @@ module.exports = {
   },
   postcss: function () {
     return [
-      require('postcss-nested')()
+      require('postcss-nested')(),
+      require('postcss-url')({
+        url: 'inline',
+        basePath: __dirname + '/src/static/png'
+      })
     ]
   },
   plugins: [

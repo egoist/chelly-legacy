@@ -1,4 +1,4 @@
-<style scoped>
+<style>
   .sidebar-loading {
     position: fixed;
     top: 0;
@@ -24,14 +24,7 @@
 </style>
 
 <template>
-  <Sidebar
-    :on-update-editarea="handleUpdateEditarea"
-    :default-note="defaultNote"
-    :mode.sync="mode"
-    :current-saved.sync="currentSaved">
-  </Sidebar>
   <Editarea
-    :on-update-sidebar="handleUpdateSidebar"
     :default-note="defaultNote"
     :mode.sync="mode"
     :current-saved.sync="currentSaved">
@@ -44,7 +37,7 @@
   export default {
     data () {
       let mode = 'create'
-      let defaultNote = guideMarkdown
+      let defaultNote = Object.create(guideMarkdown)
       let currentSaved = false
       const lastNote = db.lastNote.get()
       if (lastNote) {
@@ -58,16 +51,7 @@
         currentSaved
       }
     },
-    methods: {
-      handleUpdateEditarea (note) {
-        this.$broadcast('update.editor', note)
-      },
-      handleUpdateSidebar (note) {
-        this.$broadcast('update.sidebar.current', note)
-      }
-    },
     components: {
-      Sidebar: require('../components/side-bar'),
       Editarea: require('../components/edit-area')
     }
   }

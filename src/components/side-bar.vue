@@ -38,13 +38,20 @@
         border-color: #35b5f4;
       }
     }
+    .sidebar-heading {
+      font-size: 11px;
+      font-weight: bold;
+      padding: 3px 10px;
+      color: #778087;
+      margin-top: 10px;
+    }
     .sidebar-notes {
       overflow: auto;
       height: calc(100% - 40px)
     }
     .sidebar-note {
-      padding: 8px 10px;
-      font-size: 14px;
+      padding: 5px 10px;
+      font-size: 12px;
       cursor: pointer;
       &:hover {
         background-color: #f0f0f0;
@@ -52,6 +59,15 @@
       &.active {
         color: #fff;
         background-color: #398df0;
+        .octicon {
+          color: #fff;
+        }
+      }
+      .octicon {
+        color: #767676;
+      }
+      .note-title {
+        margin-left: 5px;
       }
     }
     .sidebar-loader {
@@ -73,11 +89,18 @@
       </div>
 
     </header>
+    <div class="sidebar-history" v-show="history && history.length > 0">
+      <div class="sidebar-heading">Recent</div>
+      <template v-for="note in history">
+        <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': $index === 0}">{{ note.title }}</div>
+      </template>
+    </div>
     <div v-show="notes.length === 0" class="inner sidebar-notes-loading">Loading...</div>
-    <div class="sidebar-notes">
+    <div class="sidebar-notes" v-show="notes && notes.length > 0">
+      <div class="sidebar-heading">Notes</div>
       <template v-for="note in notes | filterBy search_keyword in 'title'" track-by="objectId">
-        <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': note.active}">
-          {{ note.title }}
+        <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': (note.active && note.unsaved) || note.updated}">
+          <span class="octicon octicon-file-text"></span><span class="note-title">{{ note.title }}</span>
         </div>
       </template>
     </div>
@@ -96,7 +119,9 @@
     data () {
       return {
         search_keyword: '',
-        notes: []
+        notes: [],
+        history: [],
+        activeSection: 'recent'
       }
     },
     methods: {
@@ -122,27 +147,46 @@
       },
       applyEmptyNote () {
         if (!this.currentSaved) {
-          alert('Do not save the current note?')
+          this.deleteNote()
           return
         }
         domEach($$('.sidebar-note'), el => el.classList.remove('active'))
-        this.notes.unshift(emptyNote)
-        this.onUpdateEditarea(emptyNote)
+        const note = Object.create(emptyNote)
+        this.notes.unshift(note)
+        this.$dispatch('update.editor.note', note)
       },
       activateNote (note, e) {
+        console.log(this.currentSaved)
         if (!this.currentSaved) {
-          alert('Do not save the current note?')
-          return
+          if (this.deleteNote(e)) {
+            return
+          }
         }
         const timeout = this.search_keyword ? 100 : 0
         this.search_keyword = ''
+        const target = e.currentTarget
         setTimeout(() => {
           domEach($$('.sidebar-note'), el => el.classList.remove('active'))
-          e.target.classList.add('active')
+          target.classList.add('active')
           this.defaultNote = note
-          this.onUpdateEditarea(note)
+          this.$dispatch('update.editor.note', note)
         }, timeout)
 
+      },
+      deleteNote (e, note = this.notes.filter(note => note.unsaved)) {
+        if (confirm('Leave without saving the note?')) {
+          this.currentSaved = true
+          note = note[0]
+          if (note && !note.objectId) {
+            e.currentTarget.click()
+            this.notes.shift(0)
+            return true
+          } else {
+            return false
+          }
+        } else {
+          return true
+        }
       },
       update (note) {
         this.defaultNote = note
@@ -156,25 +200,15 @@
           return current_note
         })
       },
-      updateHistory (note) {
-        const exist = db.history.get().forEach(db_note => {
-          if (db_note.objectId === note.objectId) {
-            return true
-          }
-        })
-        if (exist) {
-          return
-        }
-        let history = db.history.add(note).get()
-        if (history.length > 10) {
-          history = history.slice(1)
-          db.history.override(history)
-        }
+      updateSidebarHistory () {
+        const history = db.history.get()
+        this.history = (history && history.reverse()) || []
       }
     },
     ready () {
       this.fetchNotes()
-      this.$on('update.sidebar.current', this.update)
+      this.updateSidebarHistory()
+      this.$on('update.sidebar.active.note', this.update)
     }
   }
 </script>
