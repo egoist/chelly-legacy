@@ -144,7 +144,6 @@
           notie('success', 'Saved!')
           this.note = data
           this.note.active = true
-          this.note.updated = true
           this.currentSaved = true
           this.mode = 'update'
           db.lastNote.override(this.note, true)

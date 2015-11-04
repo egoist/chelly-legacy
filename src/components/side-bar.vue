@@ -92,14 +92,14 @@
     <div class="sidebar-history" v-show="history && history.length > 0">
       <div class="sidebar-heading">Recent</div>
       <template v-for="note in history">
-        <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': $index === 0}">{{ note.title }}</div>
+        <div class="sidebar-note" @click="activateNote(note, $event)">{{ note.title }}</div>
       </template>
     </div>
     <div v-show="notes.length === 0" class="inner sidebar-notes-loading">Loading...</div>
     <div class="sidebar-notes" v-show="notes && notes.length > 0">
       <div class="sidebar-heading">Notes</div>
       <template v-for="note in notes | filterBy search_keyword in 'title'" track-by="objectId">
-        <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': (note.active && note.unsaved) || note.updated}">
+        <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': note.active}">
           <span class="octicon octicon-file-text"></span><span class="note-title">{{ note.title }}</span>
         </div>
       </template>
@@ -114,6 +114,7 @@
   import { $, $$, domEach } from '../helpers/dom'
   import { sidebarLoader } from '../helpers/loaders'
   import emptyNote from '../helpers/empty'
+  import notie from 'notie'
   export default {
     props: ['onUpdateEditarea', 'defaultNote', 'mode', 'currentSaved'],
     data () {
@@ -130,6 +131,9 @@
         const user = db.app.get('user')
         this.$http.post(url(`user/${user.username}/notes/all`), {api_key: user.api_key, user_id: user.objectId}, notes => {
           sidebarLoader.stop()
+          if (notes.code) {
+            return notie('error', notes.message)
+          }
           if (notes && notes.length > 0) {
             notes.forEach(note => {
               if (note.objectId === this.defaultNote.objectId) {
