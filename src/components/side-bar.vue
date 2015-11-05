@@ -182,8 +182,9 @@
           } else {
             this.notes = [this.defaultNote]
           }
-          Ps.initialize($('.sidebar-notes'))
-          Ps.initialize($('.sidebar-history'))
+          setTimeout(() => {
+            Ps.initialize($('.sidebar-notes'))
+          }, 200)
         })
       },
       applyEmptyNote () {
@@ -244,7 +245,9 @@
       updateSidebarHistory () {
         const history = db.history.get()
         this.history = (history && history.reverse()) || []
-
+        setTimeout(() => {
+          Ps.initialize($('.sidebar-history'))
+        }, 200)
       }
     },
     ready () {

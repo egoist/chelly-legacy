@@ -204,6 +204,9 @@
           this.mode = 'update'
           db.lastNote.override(note, true)
           sidebarLoader.stop()
+          setTimeout(() => {
+            Ps.update($('.markdown-body'))
+          }, 200)
         })
       },
       fetchNote (note, fn) {
@@ -229,8 +232,8 @@
       this.editor.on('scroll', this.handleScroll)
       this.editor.on('keypress', this.handleTyper)
       CodeMirror.commands.save = this.handleSave
-      Ps.initialize($('.markdown-body'))
       this.$on('update.editor.note', this.update)
+      Ps.initialize($('.markdown-body'))
     },
     filters: {
       md
