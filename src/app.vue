@@ -1,4 +1,5 @@
 <style src="codemirror/lib/codemirror.css"></style>
+<style src="codemirror/addon/scroll/simplescrollbars.css"></style>
 <style src="./css/preview-github2.css"></style>
 <style src="./css/reset.css"></style>
 <style src="./css/icons.css"></style>

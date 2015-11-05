@@ -60,6 +60,10 @@
     width: calc(50% - 1px);
     border-left: 1px solid #e3e3e3;
     overflow: auto;
+    position: relative;
+    .markdown-body {
+      height: 100%;
+    }
   }
 </style>
 <style>
@@ -87,7 +91,9 @@
     <div class="write-here" v-el:write>
       <textarea v-el:textarea class="form-control" v-model="note.content">{{ note.content }}</textarea>
     </div>
-    <div class="preview-here github2" v-el:preview>{{{ note.content | md }}}</div>
+    <div class="preview-here github2">
+      <div class="markdown-body" v-el:preview>{{{ note.content | md }}}</div>
+    </div>
 
   </section>
 </template>
@@ -95,13 +101,16 @@
 <script>
   import CodeMirror from 'codemirror'
   import markdown from 'codemirror/mode/markdown/markdown'
+  import simpleScrollbar from 'codemirror/addon/scroll/simplescrollbars'
   import md from '../helpers/md'
+  import { $, $$ } from '../helpers/dom'
   import { url } from '../helpers/api'
   import { sidebarLoader } from '../helpers/loaders'
   import db from '../helpers/localdb'
   import keymapping from '../helpers/keymapping'
   import biu from '../helpers/biu'
   import notie from 'notie'
+  import Ps from 'perfect-scrollbar'
   export default {
     props: ['defaultNote', 'onUpdateSidebar', 'mode', 'currentSaved'],
     data () {
@@ -214,12 +223,13 @@
         lineWrapping: true,
         smartIndent: false,
         matchBrackets: true,
+        scrollbarStyle: 'simple'
       })
       this.editor.on('change', this.handleChange)
       this.editor.on('scroll', this.handleScroll)
       this.editor.on('keypress', this.handleTyper)
       CodeMirror.commands.save = this.handleSave
-
+      Ps.initialize($('.markdown-body'))
       this.$on('update.editor.note', this.update)
     },
     filters: {

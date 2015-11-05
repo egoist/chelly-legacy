@@ -30,6 +30,36 @@ a {
   top: 50px;
 }
 
-.ps-container.ps-active-x > .ps-scrollbar-x-rail, .ps-container.ps-active-y > .ps-scrollbar-y-rail {
-  top: 0 !important;
+#app {
+  .ps-container.ps-active-x > .ps-scrollbar-x-rail, .ps-container.ps-active-y > .ps-scrollbar-y-rail {
+    top: 0 !important;
+  }
+
+  .ps-container > .ps-scrollbar-y-rail {
+    border-radius: 2px;
+    background-color: #eee;
+    .ps-scrollbar-y {
+      border-radius: 2px;
+      border: 1px solid #bbb;
+      background-color: #ccc;
+    }
+  }
+  .CodeMirror-simplescroll-vertical {
+    cursor: default;
+    opacity: 0;
+    background-color: #eee;
+    transition: opacity .3s;
+  }
+  .write-here {
+    padding: 0 0 0 10px;
+    &:hover {
+      .CodeMirror-simplescroll-vertical {
+        transition: opacity .3s;
+        opacity: .5;
+        &:hover {
+          opacity: .8;
+        }
+      }
+    }
+  }
 }
