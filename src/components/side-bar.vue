@@ -7,11 +7,23 @@
     width: 240px;
     box-shadow: inset -1px 0 #e3e3e3;
     background-color: #fff;
-    padding-bottom: 4px;
     .sidebar-header {
       height: 40px;
       line-height: 40px;
       border-bottom: 1px solid #d9d9d9;
+    }
+    .sidebar-main {
+      height: calc(100% - 40px);
+    }
+    .sidebar-notes-wrapper, .sidebar-history-wrapper {
+      position: relative;
+    }
+    .sidebar-history {
+      height: 140px;
+      overflow: hidden;
+    }
+    .sidebar-notes-wrapper {
+      height: calc(100% - 200px);
     }
     .global-notes-search, .new-btn {
       height: 25px;
@@ -41,16 +53,18 @@
     .sidebar-heading {
       font-size: 11px;
       font-weight: bold;
-      padding: 3px 10px;
+      padding: 0 10px;
+      height: 20px;
+      line-height: 20px;
       color: #778087;
-      margin-top: 10px;
     }
     .sidebar-notes {
-      overflow: auto;
-      height: calc(100% - 40px)
+      height: 100%;
     }
     .sidebar-note {
-      padding: 5px 10px;
+      padding: 0 10px;
+      height: 28px;
+      line-height: 28px;
       font-size: 12px;
       cursor: pointer;
       &:hover {
@@ -65,15 +79,26 @@
       }
       .octicon {
         color: #767676;
+        float: left;
+        margin-top: 5px;
       }
       .note-title {
-        margin-left: 5px;
+        white-space: nowrap;
+        position: relative;
+        left: 5px;
+        text-overflow: ellipsis;
+        max-width: calc(100% - 20px);
+        overflow: hidden;
+        display: block;
       }
     }
     .sidebar-loader {
       position: fixed;
       bottom: 0;
       left: 0;
+    }
+    .sep10 {
+      height: 10px;
     }
   }
 </style>
@@ -89,20 +114,30 @@
       </div>
 
     </header>
-    <div class="sidebar-history" v-show="history && history.length > 0">
-      <div class="sidebar-heading">Recent</div>
-      <template v-for="note in history">
-        <div class="sidebar-note" @click="activateNote(note, $event)">{{ note.title }}</div>
-      </template>
-    </div>
-    <div v-show="notes.length === 0" class="inner sidebar-notes-loading">Loading...</div>
-    <div class="sidebar-notes" v-show="notes && notes.length > 0">
-      <div class="sidebar-heading">Notes</div>
-      <template v-for="note in notes | filterBy search_keyword in 'title'" track-by="objectId">
-        <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': note.active}">
-          <span class="octicon octicon-file-text"></span><span class="note-title">{{ note.title }}</span>
+    <div class="sidebar-main">
+      <div class="sep10" v-show="history && history.length > 4"></div>
+      <div class="sidebar-heading" v-show="history && history.length > 4">Recent</div>
+      <div class="sidebar-history-wrapper" v-show="history && history.length > 4">
+        <div class="sidebar-history">
+          <template v-for="note in history">
+            <div class="sidebar-note" @click="activateNote(note, $event)">
+              <span class="octicon octicon-file-text"></span><span class="note-title">{{ note.title }}</span>
+            </div>
+          </template>
         </div>
-      </template>
+      </div>
+      <div v-show="notes.length === 0" class="inner sidebar-notes-loading">Loading...</div>
+      <div class="sep10"></div>
+      <div class="sidebar-heading" v-show="notes && notes.length > 0">Notes</div>
+      <div class="sidebar-notes-wrapper" v-show="notes && notes.length > 0">
+        <div class="sidebar-notes">
+          <template v-for="note in notes | filterBy search_keyword in 'title'" track-by="objectId">
+            <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': note.active}">
+              <span class="octicon octicon-file-text"></span><span class="note-title">{{ note.title }}</span>
+            </div>
+          </template>
+        </div>
+      </div>
     </div>
     <div class="sidebar-loader loader"></div>
   </div>
@@ -115,6 +150,7 @@
   import { sidebarLoader } from '../helpers/loaders'
   import emptyNote from '../helpers/empty'
   import notie from 'notie'
+  import Ps from 'perfect-scrollbar'
   export default {
     props: ['onUpdateEditarea', 'defaultNote', 'mode', 'currentSaved'],
     data () {
@@ -146,7 +182,8 @@
           } else {
             this.notes = [this.defaultNote]
           }
-
+          Ps.initialize($('.sidebar-notes'))
+          Ps.initialize($('.sidebar-history'))
         })
       },
       applyEmptyNote () {
@@ -207,6 +244,7 @@
       updateSidebarHistory () {
         const history = db.history.get()
         this.history = (history && history.reverse()) || []
+
       }
     },
     ready () {

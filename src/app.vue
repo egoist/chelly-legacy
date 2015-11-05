@@ -6,6 +6,7 @@
 <style src="./css/form.css"></style>
 <style src="./css/biu.css"></style>
 <style src="./css/loader.css"></style>
+<style src="perfect-scrollbar/dist/css/perfect-scrollbar.css"></style>
 
 <template>
   <div id="app">

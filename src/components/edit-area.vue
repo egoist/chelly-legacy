@@ -167,7 +167,7 @@
           }
         }
         history = db.history.add(note).get()
-        if (history.length > 10) {
+        if (history.length > 20) {
           history = history.slice(1)
           db.history.override(history)
         }
