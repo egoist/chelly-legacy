@@ -51,7 +51,14 @@ a {
     transition: opacity .3s;
   }
   .write-here {
-    padding: 0 0 0 10px;
+    .CodeMirror {
+      height: 100%;
+      font-family: inherit;
+      padding: 10px;
+      padding-right: 0;
+    }
+  }
+  .edit-main {
     &:hover {
       .CodeMirror-simplescroll-vertical {
         transition: opacity .3s;

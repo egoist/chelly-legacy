@@ -120,7 +120,7 @@
       <div class="sidebar-history-wrapper" v-show="history && history.length > 4">
         <div class="sidebar-history">
           <template v-for="note in history">
-            <div class="sidebar-note" @click="activateNote(note, $event)">
+            <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': (note.active && note.unsaved) || note.forceActive}">
               <span class="octicon octicon-file-text"></span><span class="note-title">{{ note.title }}</span>
             </div>
           </template>
@@ -194,11 +194,10 @@
         }
         domEach($$('.sidebar-note'), el => el.classList.remove('active'))
         const note = Object.create(emptyNote)
-        this.notes.unshift(note)
+        this.history.unshift(note)
         this.$dispatch('update.editor.note', note)
       },
       activateNote (note, e) {
-        console.log(this.currentSaved)
         if (!this.currentSaved) {
           if (this.deleteNote(e)) {
             return
@@ -232,7 +231,8 @@
       },
       update (note) {
         this.defaultNote = note
-        this.notes = this.notes.map(current_note => {
+        this.history = this.history.map(current_note => {
+          note.forceActive = true
           if (current_note.unsaved) {
             return note
           }

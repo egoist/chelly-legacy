@@ -78,7 +78,7 @@
 
 <script>
   import { url } from '../helpers/api'
-  import biu from '../helpers/biu'
+  import notie from 'notie'
   import db from '../helpers/localdb'
   export default {
     data () {
@@ -109,25 +109,13 @@
         const user = type === 'register' ? this.userForReg : this.userForLogin
         for (var key in user) {
           if (!user[key]) {
-            return biu({
-              type: 'error',
-              text: 'You should have filled out the form!',
-              autoHide: true
-            })
+            return notie('error', 'You should have filled out the form!')
           }
         }
-        var processing = biu({
-          type: 'info',
-          text: 'Processing...'
-        })
+        notie('info', 'Processing...')
         this.$http.post(url(type), {user: user}, data => {
-          processing.hide()
           if (data.code) {
-            return biu({
-              type: 'error',
-              text: data.message,
-              autoHide: true
-            })
+            return notie('error', data.message)
           }
           db.app.set('user', data)
           this.$route.router.go('/new')

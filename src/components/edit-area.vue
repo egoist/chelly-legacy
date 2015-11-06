@@ -30,9 +30,12 @@
       }
     }
   }
+  .edit-main {
+    height: calc(100% - 40px);
+  }
   .write-here, .preview-here {
     width: 50%;
-    height: calc(100% - 40px);
+    height: 100%;
     float: left;
     padding: 10px;
     word-wrap: break-word;
@@ -40,6 +43,7 @@
   .write-here {
     padding-right: 0;
     cursor: text;
+    padding: 0;
     textarea {
       border: none;
       width: 100%;
@@ -51,16 +55,13 @@
         border: none;
       }
     }
-    .CodeMirror {
-      height: 100%;
-      font-family: inherit;
-    }
   }
   .preview-here {
     width: calc(50% - 1px);
     border-left: 1px solid #e3e3e3;
     overflow: auto;
     position: relative;
+    padding: 0 10px;
     .markdown-body {
       height: 100%;
     }
@@ -88,13 +89,14 @@
         <button type="button">tag</button>
       </div>
     </div>
-    <div class="write-here" v-el:write>
-      <textarea v-el:textarea class="form-control" v-model="note.content">{{ note.content }}</textarea>
+    <div class="edit-main">
+      <div class="write-here" v-el:write>
+        <textarea v-el:textarea class="form-control" v-model="note.content">{{ note.content }}</textarea>
+      </div>
+      <div class="preview-here github2">
+        <div class="markdown-body" v-el:preview>{{{ note.content | md }}}</div>
+      </div>
     </div>
-    <div class="preview-here github2">
-      <div class="markdown-body" v-el:preview>{{{ note.content | md }}}</div>
-    </div>
-
   </section>
 </template>
 
