@@ -9,13 +9,16 @@ module.exports = {
     libraryTarget: 'commonjs2'
   },
   resolve: {
-    extensions: ['', '.js', '.vue']
+    extensions: ['', '.js', '.vue', '.json']
   },
   module: {
     loaders: [
       {
         test: /\.js$/, loaders: ['babel?stage=0'],
         exclude: [/node_modules/]
+      },
+      {
+        test: /\.json$/, loaders: ['json']
       },
       {
         test: /\.vue$/,

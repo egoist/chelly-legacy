@@ -231,16 +231,21 @@
       },
       update (note) {
         this.defaultNote = note
-        this.history = this.history.map(current_note => {
-          note.forceActive = true
-          if (current_note.unsaved) {
-            return note
-          }
-          if (current_note.objectId === note.objectId) {
-            return note
-          }
-          return current_note
-        })
+        function update (where) {
+          return where.map(current_note => {
+            note.forceActive = true
+            if (current_note.unsaved) {
+              return note
+            }
+            if (current_note.objectId === note.objectId) {
+              return note
+            }
+            return current_note
+          })
+        }
+        this.history = update(this.history)
+        this.notes = update(this.notes)
+        Ps.update($('.sidebar-notes'))
       },
       updateSidebarHistory () {
         const history = db.history.get()

@@ -110,7 +110,16 @@
   li {
     margin: 0; }
   ul, ol {
-    padding-left: 30px; }
+    padding-left: 30px;
+    &.task-list-items {
+      list-style: none;
+      padding-left: 0;
+      .task-list-item-checkbox {
+        margin-right: 5px;
+        vertical-align: middle;
+      }
+    }
+  }
 
   ul :first-child, ol :first-child {
     margin-top: 0; }
