@@ -30,6 +30,10 @@ a {
   top: 50px;
 }
 
+.default-cursor {
+  cursor: default !important;
+}
+
 #app {
   .ps-container.ps-active-x > .ps-scrollbar-x-rail, .ps-container.ps-active-y > .ps-scrollbar-y-rail {
     top: 0 !important;

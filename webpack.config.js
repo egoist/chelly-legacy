@@ -2,11 +2,11 @@ var webpack = require('webpack')
 var path = require('path')
 
 module.exports = {
+  devtool: 'eval',
   entry: ['./src/chelly.js'],
   output: {
     path: path.resolve('./build'),
-    filename: 'bundle.js',
-    libraryTarget: 'commonjs2'
+    filename: 'bundle.js'
   },
   resolve: {
     extensions: ['', '.js', '.vue', '.json']

@@ -125,14 +125,26 @@
         this.note.content = this.editor.getValue()
       },
       handleTitleSave (e) {
+        e.preventDefault()
         if (e.metaKey || e.ctrlKey) {
           this.handleSave()
         }
       },
       handleDeleteNote (note = this.note, e) {
+        if (!this.note.objectId) {
+          this.$broadcast('delete.untitled')
+          return
+        }
         const user = db.app.get('user')
-        this.$http.post(url('note/remove'), {note: note, api_key: user.api_key, user_id: user.objectId}, data => {
-          console.log(data)
+        sidebarLoader.start()
+        this.$http.post(url('note/remove'), {note_id: note.objectId, api_key: user.api_key, user_id: user.objectId}, data => {
+          sidebarLoader.stop()
+          if (data.objectId) {
+            notie('success', `Deleted '${note.title}'`)
+          }
+          if (data.code) {
+            notie('error', data.message)
+          }
         })
       },
       handleScroll () {
@@ -154,34 +166,22 @@
           }
           notie('success', 'Saved!')
           this.note = data
+          db.lastNote.override(this.note, true)
+          this.updateHistory(this.note)
           this.note.active = true
           this.currentSaved = true
           this.mode = 'update'
-          db.lastNote.override(this.note, true)
-          this.updateHistory(this.note)
           this.$broadcast('update.sidebar.active.note', this.note)
         })
       },
       updateHistory (note) {
-        let history = db.history.get()
-        if (history) {
-          let exist = false
-          history.forEach(db_note => {
-            if (db_note.objectId === note.objectId) {
-              exist = true
-              return
-            }
-          })
-          console.log(exist)
-          if (exist) {
-            return
+        const user = db.app.get('user')
+        this.$http.post(url('add/history'), {note: note, api_key: user.api_key, user_id: user.objectId}, data => {
+          if (data.code) {
+            notie('error', data.message)
           }
-        }
-        history = db.history.add(note).get()
-        if (history.length > 20) {
-          history = history.slice(1)
-          db.history.override(history)
-        }
+          this.$broadcast('update.sidebar.history')
+        })
       },
       update (note) {
         sidebarLoader.start()
@@ -197,14 +197,12 @@
         this.fetchNote(note, note => {
           if (note.code) {
             sidebarLoader.stop()
-            console.log(note)
             return notie('error', note.message)
           }
           this.note = note
           this.$els.textarea.value = note.content
           this.editor.setValue(note.content)
           this.mode = 'update'
-          db.lastNote.override(note, true)
           sidebarLoader.stop()
           setTimeout(() => {
             Ps.update($('.markdown-body'))

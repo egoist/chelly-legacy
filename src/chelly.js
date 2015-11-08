@@ -1,4 +1,3 @@
-import remote from 'remote'
 import localdb from 'localdb'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -11,11 +10,15 @@ if (location.href.indexOf('index.hot.html') > -1) {
   window.Vue = Vue
 }
 Vue.use(require('vue-resource'))
-// set Menu
-import menuTemplate from './menuTemplate'
-let Menu = remote.require('menu')
-const menu = Menu.buildFromTemplate(menuTemplate)
-Menu.setApplicationMenu(menu)
+
+if (window && window.process && window.process.type) {
+  // set Menu
+  const remote = require('remote')
+  const menuTemplate = require('./menuTemplate')
+  let Menu = remote.require('menu')
+  const menu = Menu.buildFromTemplate(menuTemplate)
+  Menu.setApplicationMenu(menu)
+}
 
 // create folder to store notes
 if (!db.app.get('init')) {

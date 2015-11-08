@@ -117,7 +117,7 @@
           if (data.code) {
             return notie('error', data.message)
           }
-          db.app.set('user', data)
+          db.app.set('user', data.user)
           this.$route.router.go('/new')
         })
       }

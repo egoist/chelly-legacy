@@ -2,5 +2,6 @@ export default {
   title: 'Untitled',
   content: '',
   active: true,
-  unsaved: true
+  unsaved: true,
+  whocanview: 'me'
 }

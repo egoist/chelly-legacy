@@ -18,3 +18,45 @@ register('app', () => {
     exec(`NODE_ENV=development HOT=1 electron .`)
   }
 })
+
+register('copy', () => {
+  mkdir('-p', 'apps/desktop')
+  const desktopFiles = [
+    'index.html',
+    'build',
+    'package.json',
+    'fonts',
+    'app.js'
+  ]
+  cp('-rf', desktopFiles, 'apps/desktop')
+})
+
+register('build.desktop', () => {
+  exec('set NODE_ENV=production && webpack -p')
+})
+
+import packager from 'electron-packager'
+register('package.desktop', () => {
+  const opts = {
+    dir: __dirname + '/apps/desktop',
+    name: 'Chelly',
+    platform: 'win32',
+    arch: 'ia32',
+    version: '0.34.3',
+    out: __dirname + '/releases'
+  }
+  packager(opts, (err, appPath) => {
+    if (error) {
+      return console.error(err)
+    }
+    console.log(appPath)
+  })
+})
+
+register('release', ['build.desktop', 'copy', 'package.desktop'])
+
+register('web.publish', () => {
+  exec('set NODE_ENV=production && webpack -p --config webpack.config.web.js')
+  emit('copy')
+  exec('surge -d chelly.surge.sh -p apps/desktop')
+})

@@ -32,12 +32,12 @@
 </template>
 
 <script>
-  import guideMarkdown from '../helpers/guide'
+  import emptyNote from '../helpers/empty'
   import db from '../helpers/localdb'
   export default {
     data () {
       let mode = 'create'
-      let defaultNote = Object.create(guideMarkdown)
+      let defaultNote = Object.assign({}, emptyNote)
       let currentSaved = false
       const lastNote = db.lastNote.get()
       if (lastNote) {

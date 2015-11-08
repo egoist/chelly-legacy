@@ -24,6 +24,9 @@
     }
     .sidebar-notes-wrapper {
       height: calc(100% - 200px);
+      &.full-height {
+        height: calc(100% - 30px);
+      }
     }
     .global-notes-search, .new-btn {
       height: 25px;
@@ -104,6 +107,7 @@
 </style>
 
 <template>
+  <EditorOverlay v-if="history.length < 5 && showOverlay || forceShowOverlay"></EditorOverlay>
   <div class="sidebar">
     <header class="sidebar-header">
       <div class="grid-8 with-padding">
@@ -117,23 +121,24 @@
     <div class="sidebar-main">
       <div class="sep10" v-show="history && history.length > 4"></div>
       <div class="sidebar-heading" v-show="history && history.length > 4">Recent</div>
+      <div v-show="history && history.length === 0" class="inner sidebar-notes-loading">Loading...</div>
       <div class="sidebar-history-wrapper" v-show="history && history.length > 4">
         <div class="sidebar-history">
           <template v-for="note in history">
-            <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': (note.active && note.unsaved) || note.forceActive}">
+            <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': ($index === 0 && activeSection === 'recent') || note.unsaved}">
               <span class="octicon octicon-file-text"></span><span class="note-title">{{ note.title }}</span>
             </div>
           </template>
         </div>
       </div>
-      <div v-show="notes.length === 0" class="inner sidebar-notes-loading">Loading...</div>
       <div class="sep10"></div>
       <div class="sidebar-heading" v-show="notes && notes.length > 0">Notes</div>
-      <div class="sidebar-notes-wrapper" v-show="notes && notes.length > 0">
+      <div v-show="notes.length === 0" class="inner sidebar-notes-loading">Loading...</div>
+      <div class="sidebar-notes-wrapper" v-show="notes && notes.length > 0" :class="{'full-height': history.length < 5}">
         <div class="sidebar-notes">
           <template v-for="note in notes | filterBy search_keyword in 'title'" track-by="objectId">
-            <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': note.active}">
-              <span class="octicon octicon-file-text"></span><span class="note-title">{{ note.title }}</span>
+            <div class="sidebar-note" @click="activateNote(note, $event)" :class="{'active': note.active && activeSection === 'notes', 'default-cursor': note.unsaved}">
+              <span class="octicon" :class="{'octicon-diff-modified': note.unsaved, 'octicon-file-text': !note.unsaved}"></span><span class="note-title">{{ note.title }}</span>
             </div>
           </template>
         </div>
@@ -158,7 +163,10 @@
         search_keyword: '',
         notes: [],
         history: [],
-        activeSection: 'recent'
+        activeSection: 'notes',
+        inited: false,
+        showOverlay: true,
+        forceShowOverlay: false
       }
     },
     methods: {
@@ -178,7 +186,10 @@
             })
           }
           if (notes.length > 0) {
-            this.notes = notes
+            this.notes = notes.map(n => {
+              n.active = false
+              return n
+            })
           } else {
             this.notes = [this.defaultNote]
           }
@@ -190,36 +201,49 @@
       applyEmptyNote () {
         if (!this.currentSaved) {
           this.deleteNote()
-          return
         }
+        this.activeSection = 'notes'
         domEach($$('.sidebar-note'), el => el.classList.remove('active'))
-        const note = Object.create(emptyNote)
-        this.history.unshift(note)
+        const note = Object.assign({}, emptyNote)
+        this.notes.unshift(note)
         this.$dispatch('update.editor.note', note)
+        this.showOverlay = false
       },
       activateNote (note, e) {
-        if (!this.currentSaved) {
+        if (note.unsaved) {
+          return
+        }
+        if (!this.currentSaved && !this.showOverlay) {
           if (this.deleteNote(e)) {
             return
           }
         }
+        this.currentSaved = true
         const timeout = this.search_keyword ? 100 : 0
         this.search_keyword = ''
         const target = e.currentTarget
+        if (target.parentNode.classList.contains('sidebar-notes')) {
+          this.activeSection = 'notes'
+        } else {
+          this.activeSection = 'recent'
+        }
         setTimeout(() => {
           domEach($$('.sidebar-note'), el => el.classList.remove('active'))
           target.classList.add('active')
           this.defaultNote = note
           this.$dispatch('update.editor.note', note)
         }, timeout)
-
+        this.forceShowOverlay = false
+        this.showOverlay = false
       },
       deleteNote (e, note = this.notes.filter(note => note.unsaved)) {
         if (confirm('Leave without saving the note?')) {
-          this.currentSaved = true
           note = note[0]
+          if (e) {
+            this.currentSaved = true
+          }
           if (note && !note.objectId) {
-            e.currentTarget.click()
+            e && e.currentTarget.click()
             this.notes.shift(0)
             return true
           } else {
@@ -229,11 +253,15 @@
           return true
         }
       },
+      deleteUntitled () {
+        this.notes.shift(0)
+        this.currentSaved = true
+        this.forceShowOverlay = true
+      },
       update (note) {
         this.defaultNote = note
         function update (where) {
           return where.map(current_note => {
-            note.forceActive = true
             if (current_note.unsaved) {
               return note
             }
@@ -248,17 +276,31 @@
         Ps.update($('.sidebar-notes'))
       },
       updateSidebarHistory () {
-        const history = db.history.get()
-        this.history = (history && history.reverse()) || []
-        setTimeout(() => {
-          Ps.initialize($('.sidebar-history'))
-        }, 200)
+        const user = db.app.get('user')
+        this.$http.post(url('user/history'), {user_id: user.objectId, api_key: user.api_key}, data => {
+          if (data.code) {
+            return notie('error', data.message)
+          }
+          this.history = data
+          if (data.length > 4 && !this.inited) {
+            this.activeSection = 'recent'
+            this.inited = true
+          }
+          setTimeout(() => {
+            Ps.initialize($('.sidebar-history'))
+          }, 200)
+        })
       }
     },
     ready () {
       this.fetchNotes()
       this.updateSidebarHistory()
       this.$on('update.sidebar.active.note', this.update)
+      this.$on('update.sidebar.history', this.updateSidebarHistory)
+      this.$on('delete.untitled', this.deleteUntitled)
+    },
+    components: {
+      editoroverlay: require('./editor-overlay')
     }
   }
 </script>

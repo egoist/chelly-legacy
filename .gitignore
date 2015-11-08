@@ -2,6 +2,8 @@
 lib/
 bower_components
 build/
+releases/
+apps/
 
 # Logs
 logs
