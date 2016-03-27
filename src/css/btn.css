@@ -1,0 +1,17 @@
+@import "./variables";
+
+.btn {
+  color: var(--color);
+  height: var(--toolBarHeight);
+  line-height: var(--toolBarHeight);
+  border: none;
+  background-color: #f0f0f0;
+  width: 200px;
+  cursor: pointer;
+  padding: 0;
+  font-size: 15px;
+  outline: none;
+  &:hover {
+    background-color: #ececec;
+  }
+}
